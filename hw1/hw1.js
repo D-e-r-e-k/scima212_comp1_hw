@@ -31,8 +31,9 @@ function setup() {
     };
     bubbles.push(bubble);
   }
-  strokeWeight(2);
-  stroke(255, 127);
+  // strokeWeight(2);
+  // stroke(255, 127);
+  noStroke();
 }
 
 function draw() {
