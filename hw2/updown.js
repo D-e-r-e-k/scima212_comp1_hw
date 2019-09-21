@@ -4,6 +4,7 @@ function setup() {
   
   var ballX = 30;
   var ballSpeed = 3;
+  var ballXS = 0;
   
   var ballX2 = 370;
   var ballSpeed2 = 5;
@@ -12,7 +13,8 @@ function setup() {
     background(220);
   
     fill(255, 0, 0);
-    ellipse(100, ballX, 30 + ballX / 5);
+    ellipse(100, ballX, 30 + ballXS);
+    ballXS = random(30);
     
     fill(0, 0, 255);
     ellipse(200, ballX2, 110 - ballX2 / 5);
