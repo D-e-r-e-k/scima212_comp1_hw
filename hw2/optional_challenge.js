@@ -54,16 +54,6 @@ var wallr = 800;
 var wallt = 0;
 var wallb = 600;
 
-function draw() {
-    background(238);   
-    //detCol(balls[0], balls[1]);
-    scan();
-    balls.forEach(detWall);
-    balls.forEach(updatePos);
-    balls.forEach(render);
-    
-}
-
 function scan() {
     for(var i = 0; i < bounds.length; i++) {
         if(bounds[i].type == 'l') {
@@ -109,7 +99,6 @@ function collide(ball1, ball2) {
         x: ball2.x - ball1.x,
         y: ball2.y - ball1.y
     };
-    //console.log('base: '+base.x+' '+ base.y);
     var basel = sqrt(base.x * base.x + base.y * base.y); //length of collision baseline
     base.x /= basel; //standerize
     base.y /= basel;
@@ -122,7 +111,6 @@ function collide(ball1, ball2) {
     var oriy = {x: 0, y: 1};
     trans(orix, base, tan);
     trans(oriy, base, tan);
-    //console.log('base: '+base.x+' '+ base.y);
 
     trans(ball1.v, base, tan);
     trans(ball2.v, base, tan);
@@ -133,7 +121,6 @@ function collide(ball1, ball2) {
 
     trans(ball1.v, orix, oriy);
     trans(ball2.v, orix, oriy);
-    //console.log(ball1.v.x + ' ' + ball1.v.y);
 
 }
 
@@ -169,7 +156,6 @@ function updatePos(item, index) {
     item.boundl.v = item.x - item.r;
     item.boundr.v = item.x + item.r;
     reSort(item.boundl.is);
-    //console.log(bounds[0].v+' '+bounds[1].v+' '+bounds[2].v+' '+bounds[3].v+' '+bounds[4].v+' '+bounds[5].v+' '+bounds[6].v+' '+bounds[7].v);
     reSort(item.boundr.is);
     if(item.pt >= 15){
         item.protected = -1;
@@ -184,5 +170,13 @@ function updatePos(item, index) {
 function render(item, index) {
     fill(127);
     ellipse(item.x, item.y, 2 * item.r);
-    //console.log(item.v.y);
+}
+
+function draw() {
+    background(238);   
+    scan();
+    balls.forEach(detWall);
+    balls.forEach(updatePos);
+    balls.forEach(render);
+    
 }
