@@ -36,8 +36,8 @@ function setup() {
         balls.push(ball);
         bounds.push(ball.boundl);
         bounds.push(ball.boundr);
-        noStroke();
     }
+    noStroke();
     bounds.sort(compareBound);
     for(var i = 0; i < bounds.length; i++) {
         bounds[i].is = i;
