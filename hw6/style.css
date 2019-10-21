@@ -1,0 +1,31 @@
+/* originally from https://editor.p5js.org */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    /*cursor : none;*/
+  }
+  canvas {
+    /*cursor: default;*/
+    display: block;
+    margin: auto;
+    margin-top: calc((100vh - 400px) / 2); /*align to middle*/
+    border-width: 1px;
+    /* border-radius: 4px; */
+    /* box-shadow: 0px 8px 16px #BBB; */
+    border-style: solid;
+    border-color: #FFF;
+  }
+  h1 {
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      top: calc(60vh + 200px); /*align with canvas vertically*/
+      left: 50vw; /*aligh to the middle of canvas margin*/
+      transform: translate(-50%, -50%);
+      font-family: 'Major Mono Display', monospace;
+      font-size: 24px;
+      color: #BBB;
+  }
+  

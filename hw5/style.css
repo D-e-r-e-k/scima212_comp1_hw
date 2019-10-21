@@ -4,8 +4,10 @@ html, body {
     margin: 0;
     padding: 0;
     background-color: #DDD;
+    /*cursor : none;*/
   }
   canvas {
+    /*cursor: default;*/
     display: block;
     margin: auto;
     margin-top: calc((100vh - 600px) / 2); /*align to middle*/
