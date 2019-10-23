@@ -1,15 +1,3 @@
-//TODO 
-//  camera issue
-//  tide up
-//  fine tune paras
-//  scoring
-//  start screen
-//  colide/endgame
-//  sound
-//  better voldisplay
-//  tide up
-// sphere with light
-
 let pg;
 let stage = 1; // 1 for welcome, 2 for run
 let a_mark_r = 10;
@@ -19,8 +7,8 @@ let facing_vec;
 let facing_vec_angle;
 let vol_vec;
 //let vol_vec_angle;
-let acc = 0.5;
-let vol_max = 20;
+let acc = 0.1;
+let vol_max = 5;
 let pos_vec;
 let steer_max = 2;
 //let direction;
@@ -34,8 +22,7 @@ function preload() {
 
 function init() {
     facing_vec = createVector(0, 0, 0);
-    //facing_vec_angle = createVector(-PI/2, 0);
-    facing_vec_angle = createVector(0, 0);
+    facing_vec_angle = createVector(-PI/2, 0);
     vol_vec = createVector(0, 0, -1);
     pos_vec = createVector(0,0,0);
     //vol_vec_angle = createVector(PI/2, 0);
@@ -61,35 +48,16 @@ function welcome() {
 
 function drawPlanet() {
     push();
-        camera(0, 0, 0, facing_vec.x, facing_vec.y, facing_vec.z, anglesToVector(facing_vec_angle.x - PI/2, facing_vec_angle.y).x, anglesToVector(facing_vec_angle.x - PI/2, facing_vec_angle.y).y, anglesToVector(facing_vec_angle.x - PI/2, facing_vec_angle.y).z);
-        // if((abs(facing_vec_angle.x-PI/2)%(2*PI)) > PI) {
-        //     camera(0, 0, 0, facing_vec.x, facing_vec.y, facing_vec.z, 0, -1, 0); 
-        // } else {
-        //     camera(0, 0, 0, facing_vec.x, facing_vec.y, facing_vec.z, 0, 1, 0); 
-        // }
-
-        //console.log('updown '+ abs(facing_vec_angle.x-PI/2)%(2*PI));
-        
+        camera(0, 0, 0, facing_vec.x, facing_vec.y, facing_vec.z, 0, 1, 0); // (height/2.0) / tan
         console.log('cam '+(facing_vec.x) +' '+(facing_vec.y)+' '+(facing_vec.z));
         //camera(0, 0, 0, 0, 0, 1, 0, 1, 0);(PI*30.0 / 180.0)*2 //forward
         //let eyeZ = (height/2.0) / tan(PI*60.0/360.0);
-        //perspective(PI/3, width/height, 0.1, 100000);
-        if(facing_vec_angle.x > (PI/2) && facing_vec_angle.x < (3*PI/2)) {
-            perspective(PI/3, -width/height, 0.1, 100000);
-        } else {
-            perspective(PI/3, width/height, 0.1, 100000);
-        }
-        console.log('leftright '+(facing_vec_angle.x > (PI/2) && facing_vec_angle.x < (3*PI/2)));
+        perspective(PI/3, width/height, 0.1, 100000);
         translate(-pos_vec.x, -pos_vec.y, -pos_vec.z);
-        normalMaterial();
-        push();
-        translate(0,0,-5000);
+        translate(0,0,-1000);
         //console.log(mouse_vec.x+' '+mouse_vec.y+' | '+facing_vec.x + ' ' + facing_vec.y);
-        
-        box(1000,1000,1000);
-        pop();
-        translate(0,0,5000);
-        sphere(1000);
+        normalMaterial();
+        box(100,100,100);
     pop();
 }
 
@@ -99,33 +67,14 @@ function getMouse() {
     return m_vec;
 }
 
-function anglesToVector(x, y) {
-    let ry = -sin(x);
-    let rz = -cos(x)*cos(y);
-    let rx = -cos(x)*sin(y);
-    return createVector(rx, ry, rz);
-}
-
-function simplyA(a) {
-    if(a > (2*PI)) {
-        a -= (2 * PI);
-        return simplyA(a);
-    } else if(a < 0) {
-        a += (2 * PI);
-        return simplyA(a);
-    }
-    return a;
-}
-
 function getFace() {
 
     facing_vec_angle.add(steer_vec_angle);
-    facing_vec_angle.set(simplyA(facing_vec_angle.x), simplyA(facing_vec_angle.y));
-    //let c_vec = p5.Vector.fromAngles(facing_vec_angle.x, facing_vec_angle.y);
-    let c_vec = anglesToVector(simplyA(facing_vec_angle.x), simplyA(facing_vec_angle.y));
+
+    let c_vec = p5.Vector.fromAngles(facing_vec_angle.x, facing_vec_angle.y);
     c_vec.set(-c_vec.x, c_vec.y, c_vec.z);
     //let c_vec = p5.Vector.fromAngles(facing_vec_angle.x, PI/3);
-    console.log('face_vec'+c_vec.x +' '+c_vec.y+' '+c_vec.z);
+    console.log('face '+c_vec.x +' '+c_vec.y+' '+c_vec.z);
     
 
     return c_vec;
@@ -170,12 +119,11 @@ function showVol() {
     }
     //circle(x, y, 2*a_mark_r);
     //console.log('cam '+facing_vec.x +' '+facing_vec.y+' '+facing_vec.z);
-    console.log('face_angle '+(facing_vec_angle.x) +' '+facing_vec_angle.y);
+    console.log('face_angle '+(facing_vec_angle.x+PI/2) +' '+facing_vec_angle.y);
     console.log('steer '+steer_vec_angle.x +' '+steer_vec_angle.y);
     //console.log('xy '+ x +' '+y);
     console.log('dangle '+ angle);
     console.log('vol '+vol_vec.x +' '+vol_vec.y+' '+vol_vec.z);
-    console.log('acc' + acc);
 }
 
 function getPos() {
@@ -255,16 +203,6 @@ function mouseClicked() {
     }
     else if(stage == 2) {
         stage = 1;
-    }
-}
-
-function keyPressed() {
-    // for testing
-    if(acc!=0) {
-        acc = 0;
-        vol_vec.set(0,0,-0.01);
-    } else {
-        acc = 0.1;
     }
 }
 
