@@ -1,11 +1,7 @@
-//TODO 
-//  start/edn screen 
-//  animation
-//  tide up
-//  sound
+//model from: https://sketchfab.com/3d-models/icosahedron-15e6c3c687cb4c1093cef358b5e9c609
 
-let pg;
-let stage = 1; // 1 for welcome, 2 for run, 3 for result
+
+let stage = 1; // 1 for welcome, 2 for run, 3 for report
 let a_mark_r = 10;
 let ob; // orbiter basis
 let mouse_vec;
@@ -25,6 +21,12 @@ let r_count = 0;
 
 let facings = [];
 let facings_sum = 0;
+let tolerance = 180;
+
+let icosahedron;
+let major;
+let beep;
+let crash;
 
 
 
@@ -35,8 +37,12 @@ function preload() {
     //beep = loadSound('beep.mp3');
     
     //beep = loadSound('http://soundbible.com/grab.php?id=882&type=mp3');
+    icosahedron = loadModel('icosahedron.obj', true);
+    major = loadFont("MajorMonoDisplay-Regular.ttf");
+    beep = loadSound('beep.mp3');
+    crash = loadSound('crash.mp3');
 }
-
+  
 function init() {
     ob = {
         xi: createVector(1,0,0),
@@ -48,35 +54,52 @@ function init() {
     steer_max = 2;
     acc = 1;
     vol_max = 30;
-    console.log(timer);
+    //console.log(timer);
     timer = 0;
 
     planet_pos = createVector(0, 0, -5000);
 
     r_count_mem = createVector(0, 0, 0);
     r_count_cur = p5.Vector.sub(r_count_mem, planet_pos);
-    console.log('r_count/2PI: ' + r_count/(2*PI));
+    //console.log('r_count/2PI: ' + r_count/(2*PI));
     r_count = 0;
 
     facings = [];
     facings_sum = 0;
+    beep.pause();
+    crash.pause();
     
 }
 
 function setup(){
     createCanvas(800,400,WEBGL);
     background(0);
-    pg = createGraphics(width,height);
     noCursor();
+    textFont(major);
 }
 
 function welcome() {
+    updateMouse();
     noStroke();
-    pg.textSize(36);
-    pg.fill(255);
-    pg.text('Place_holder\nWelcome_Screen', 100, 100);
-    texture(pg);
-    plane(width,height);
+    textSize(24);
+    text('[Mission brief]---------------------\n-stay close to the asteroid\n-keep the asteroid in sight\n~\n~\n-steer with cursor\n-circle indecates velocity direction\n-click to launch\n------------------------------------', -320, -110);
+    //textSize(20);
+    //text('  -stay close to the asteroid.', -300, -76);
+    //plane(width,height);
+    fill(255);
+    showSteer();
+}
+
+function report() {
+    updateMouse();
+    noStroke();
+    textSize(24);
+    text('[teRminated]------------------------\n-you did\n-'+(r_count/(2*PI)).toFixed(3)+' circles\n-in\n-'+(timer/60).toFixed(2)+' s\n~\n~\n-click to restart\n------------------------------------', -320, -110);
+    //textSize(20);
+    //text('  -stay close to the asteroid.', -300, -76);
+    //plane(width,height);
+    fill(255);
+    showSteer();
 }
 
 function drawPlanet() {
@@ -87,13 +110,16 @@ function drawPlanet() {
         normalMaterial();
         push();
         translate(planet_pos.x, planet_pos.y, planet_pos.z); //5000 - 50000
-        box(planet_size,planet_size,planet_size);
-        //sphere(planet_size, 4, 2);
+        //box(planet_size,planet_size,planet_size);
+        scale(5);
+        model(icosahedron);
         pop();
         //translate(0,0,10000);
         //sphere(200);
     pop();
 }
+
+
 
 function updateMouse() {
     mouse_vec = createVector(mouseX - width / 2, mouseY - height / 2);
@@ -241,11 +267,12 @@ function updateLog() {
 function checkEnd() {
     if(r_count_cur.mag() < 707.106) { //    500*sqrt(2)
         stage = 3;
+      crash.play(0,1,1,0,2);
     }  
 
     if(abs(r_count_cur.angleBetween(ob.zi,-1) > (PI/2))) {  
         //  1 for facing off
-        if(facings.length < 300) {
+        if(facings.length < tolerance) {
             facings.push(1);
             facings_sum++;
         } else {
@@ -255,7 +282,7 @@ function checkEnd() {
             facings.shift();       
         }
     }   else {
-        if(facings.length < 300) {
+        if(facings.length < tolerance) {
             facings.push(0);
         } else {
             facings.push(0);
@@ -266,13 +293,16 @@ function checkEnd() {
 
     //console.log('facings_sum: '+ facings_sum);
 
-    if(facings_sum > 150) {
+    if(facings_sum > tolerance/2) {
         stage = 3;
+      beep.play(0.2,1,1,12,3);
     }
 }
 
 function playSound() {
-    //beep.play();
+    if(!beep.isPlaying()){
+    beep.play(0,1,map(facings_sum,tolerance/16,tolerance/2,0,1,true),0,0.5);
+    }
 }
 
 function run() {
@@ -301,20 +331,20 @@ function mouseClicked() {
         init();
         stage = 2;
     }
-    else if(stage != 1) {
+    else if(stage == 3) {
         stage = 1;
     }
 }
 
-function keyPressed() {
-    // for testing
-    if(acc!=0) {
-        acc = 0;
-        vol_vec.set(0,0,-0.01);
-    } else {
-        acc = 1;
-    }
-}
+// function keyPressed() {
+//     // for testing
+//     if(acc!=0) {
+//         acc = 0;
+//         vol_vec.set(0,0,-0.01);
+//     } else {
+//         acc = 1;
+//     }
+// }
 
 function draw() {
 
@@ -325,5 +355,7 @@ function draw() {
     }
     else if(stage == 2) {
         run();
+    } else if(stage == 3) {
+      report();
     }
 }
