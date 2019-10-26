@@ -1,5 +1,5 @@
-//model from: https://sketchfab.com/3d-models/icosahedron-15e6c3c687cb4c1093cef358b5e9c609
-
+// model from: https://sketchfab.com/3d-models/icosahedron-15e6c3c687cb4c1093cef358b5e9c609
+// play at: https://editor.p5js.org/D-e-r-e-k/present/_dR7Bx-3x
 
 let stage = 1; // 1 for welcome, 2 for run, 3 for report
 let a_mark_r = 10;
