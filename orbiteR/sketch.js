@@ -82,7 +82,7 @@ function welcome() {
     updateMouse();
     noStroke();
     textSize(24);
-    text('[Mission brief]---------------------\n-stay close to the asteroid\n-keep the asteroid in sight\n~\n~\n-steer with cursor\n-circle indecates velocity direction\n-click to launch\n------------------------------------', -320, -110);
+    text('[Mission]---------------------------\n-stay close to the asteroid\n-keep the asteroid in sight\n~\n~\n-steer with cursor\n-circle indecates velocity direction\n-click to launch\n------------------------------------', -320, -110);
     //textSize(20);
     //text('  -stay close to the asteroid.', -300, -76);
     //plane(width,height);
