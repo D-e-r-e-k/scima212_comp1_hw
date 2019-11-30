@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!-- saved from url=(0054)https://www.auduno.com/clmtrackr/examples/example.html -->
+<html lang="en" class="gr__auduno_com"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Face tracker</title>
+		
+		<style>
+			#container {
+				position : relative;
+			}
+
+			#canvas {
+				position : absolute;
+				left : 0;
+				top : 0;
+			}
+		</style>
+	</head>
+	<body data-gr-c-s-loaded="true">
+		<script src="./Face tracker_files/utils.js"></script>
+		<script src="clmtrackr.js"></script>
+		<div id="content">
+			<h2>Example</h2>
+			<div id="container">
+				<video id="test" width="368" height="288" autoplay loop muted plays-inline>
+					<source src="test.mp4" type="video/mp4">
+					<source src="test.webm" type="video/webm">
+				</video>
+				<canvas id="canvas" width="368" height="288"></canvas>
+			</div>
+			<p>Printing coordinates of the first 10 points in facial features:</p>
+			<p id="positions">featurepoint 0 : [140.64,139.48]<br>featurepoint 1 : [138.53,162.23]<br>featurepoint 2 : [141.02,183.50]<br>featurepoint 3 : [146.89,205.65]<br>featurepoint 4 : [158.73,224.11]<br>featurepoint 5 : [175.39,237.99]<br>featurepoint 6 : [195.22,247.53]<br>featurepoint 7 : [216.44,249.76]<br>featurepoint 8 : [234.12,244.72]<br>featurepoint 9 : [246.74,232.07]<br></p>
+			<script>
+				let videoInput = document.getElementById('test');
+
+				var ctracker = new clm.tracker();
+				ctracker.init();
+				ctracker.start(videoInput);
+				console.log(ctracker.getScore());
+
+				function positionLoop() {
+					requestAnimFrame(positionLoop);
+					var positions = ctracker.getCurrentPosition();
+					// do something with the positions ...
+					// print the positions
+					var positionString = "";
+					if (positions) {
+						for (var p = 0;p < 10;p++) {
+							positionString += "featurepoint "+p+" : ["+positions[p][0].toFixed(2)+","+positions[p][1].toFixed(2)+"]<br/>";
+						}
+						document.getElementById('positions').innerHTML = positionString;
+					}
+				}
+				positionLoop();
+
+				var canvasInput = document.getElementById('canvas');
+				var cc = canvasInput.getContext('2d');
+				function drawLoop() {
+					requestAnimFrame(drawLoop);
+					cc.clearRect(0, 0, canvasInput.width, canvasInput.height);
+					ctracker.draw(canvasInput);
+				}
+				drawLoop();
+			</script>
+		</div>
+	
+
+</body></html>
