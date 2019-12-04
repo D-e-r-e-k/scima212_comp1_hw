@@ -4,16 +4,26 @@ html, body {
     margin: 0;
     padding: 0;
     background-color: #DDD;
-    /*cursor : none;*/
   }
+
   canvas {
-    /*cursor: default;*/
     display: block;
     margin: auto;
     margin-top: calc((100vh - 600px) / 2); /*align to middle*/
     border-radius: 4px;
     box-shadow: 0px 8px 16px #BBB;
+    transform: scaleX(-1);
+    z-index: 1;
   }
+
+  video {
+    position: fixed;
+    left: 50vw;
+    transform: translateX(-50%) scaleX(-1);
+    z-index: 0;
+    border-radius: 4px;
+  }
+  
   h1 {
       margin: 0;
       padding: 0;
