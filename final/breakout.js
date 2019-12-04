@@ -1,103 +1,234 @@
-let capture;
-let cap_feed;
-let magic = new clm.tracker();
-let stream_test = document.getElementById('stream_test');
-let head_pos;
+/*TO-DO: tide-up stages vector implementation
+bat implemtentation
+blocks
+collision
+scoring
+ui
+github page
+*/
 
-let bat_pos = [400, 560];
-let bat_width = 100;
-let ball_pos = [10, 10];
-let ball_vol = [1, 2];
+let ctx;
+let rec_model = new clm.tracker();
+let webcame_feed = document.getElementById('webcam_feed');
+let head_pos = [400, 300];
+let stage = 0; //0: welcome; 1: main; 2: score
+let head_dir = [0, 1];
+let bat_pos;
+let bat_width;
+let bat_dir;
+let bat_left;
+let bat_k;
+let bat_b;
+
+let bat_right;
+let ball_pos;
+let ball_vol;
+
+function init() {
+    
+    bat_k = 1;
+    bat_b = 0;
+    bat_pos = [400, 550];
+    bat_width = 100;
+    bat_dir = [1, 0];
+    ball_pos = [400, 300];
+    ball_vol = [0, 2];
+    //console.log('init');
+}
 
 
 function setup() {
+
     createCanvas(800,600);
     noStroke();
-
-    let my_canvas = document.getElementById('defaultCanvas0');
 
     if (navigator.mediaDevices.getUserMedia) { 
         // getUserMedia section from: https://www.kirupa.com/html5/accessing_your_webcam_in_html5.htm
         navigator.mediaDevices.getUserMedia({ video: true })
           .then(function (stream) {
-            stream_test.srcObject = stream;
+            webcame_feed.srcObject = stream;
           })
           .catch(function (err0r) {
-            console.log("Something went wrong!");
+            console.log("navigator.mediaDevices.getUserMedia() failded");
           });
     }
+    
+    ctx = canvas.getContext("2d");
 
-    cap_feed = document.getElementsByTagName('video')[0];
+    rec_model.init();
+    rec_model.start(webcam_feed);
 
-    magic.init();
-    magic.start(stream_test);
-    magic.draw(my_canvas);
+}
 
+function updateHead() {
+    if(rec_model.getScore() > 0.4) {
+        if(rec_model.getCurrentPosition()[62]){
+            head_pos = rec_model.getCurrentPosition()[62];
+        }
+        if(rec_model.getCurrentPosition()[62]) {
+            head_dir = normalize(sub(rec_model.getCurrentPosition()[33], head_pos));
+        }
+            
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function drawBat() {
 
-    fill(255, 127);
+    fill(255);
 
-    if(magic.getCurrentPosition() && magic.getScore() > 0.4) {
-        head_pos = magic.getCurrentPosition()[33];
-        bat_pos = [map(head_pos[0], 200, 600, bat_width/2, 800-bat_width/2, true), 560];
-        fill(255);
+    updateHead();
+
+    bat_dir = getNormal(head_dir); 
+
+    bat_pos = [map(head_pos[0], 200, 600, bat_width/2, 800-bat_width/2, true), 560];
+
+
+    strokeWeight(20);
+    ctx.strokeStyle = "#FFFFFF";
+    stroke(255);
+
+    bat_left = add(bat_pos,mul(bat_dir, bat_width / 2));
+    bat_right = sub(bat_pos,mul(bat_dir, bat_width / 2));
+
+
+    line(bat_left[0], bat_left[1], bat_right[0], bat_right[1]);
+    strokeWeight(1);
+    noStroke;
+
+    //rect(bat_pos[0]-bat_width/2, 560, bat_width, 20);
+    
+}
+
+function batDet() {
+    
+    //  Geometry formula
+    bat_k = (bat_left[1] - bat_right[1]) / (bat_left[0] - bat_right[0]);
+    bat_b = bat_left[1] - bat_k * bat_left[0];
+
+    if(ball_pos[0] > (bat_right[0] + 5) || ball_pos[0] < (bat_left[0] - 5) || ball_vol[1] < 0) {
+        //console.log(bat_left[0] + 10);
+        //console.log(bat_right[0] - 10);
+        //console.log('x out');
+        return false;
     }
 
-    if(bat_pos) {
-        rect(bat_pos[0]-bat_width/2, 560, bat_width, 20);
-    }
+    let A = bat_k;
+    let B = -1;
+    let C = bat_b;
+
+    //console.log(A*bat_left[0] + B*bat_left[1] + C);
+    //console.log(A*bat_right[0] + B*bat_right[1] + C);
+
+    let temp = (A*ball_pos[0] + B*ball_pos[1] + C) / sqrt(sq(A) + sq(B));
+    //console.log(temp);
+
+    return temp > 0 && temp <= 20;
+}
+
+function batBounce() {
+    ball_pos = add(ball_pos, mul(head_dir, 2));
+    //console.log('before: '+ball_vol);
+    let temp = mul(head_dir, -dot(head_dir, ball_vol));
+    let delta = sub(ball_vol, mul(temp, -1));
+    //console.log('temp: '+temp);
+    //console.log('delta: '+delta);
+    ball_vol = mul(normalize(add(temp, delta)), 2);
+    console.log('after: '+ball_vol);
+
     
 }
 
 function updateBall() {
-
+    //console.log(head_dir);
     //  Wall detection
     if(ball_pos[0] <= 10) {
-        ball_vol[0] *= -1;
+        ball_vol = reverseX(ball_vol);
         ball_pos[0] = 10;
     }
     if(ball_pos[0] >= 790) {
-        ball_vol[0] *= -1;
+        ball_vol = reverseX(ball_vol);
         ball_pos[0] = 790;
     }
+
     if(ball_pos[1] <= 10) {
-        ball_vol[1] *= -1;
+        ball_vol = reverseY(ball_vol);
         ball_pos[1] = 10;
     }
 
     //  Bat detection
-    if(ball_pos[1] >= 550 
-        && ball_pos[1] <= 560
-        && ball_pos[0] >= bat_pos[0] - bat_width/2
-        && ball_pos[0] <= bat_pos[0] + bat_width/2) {
-        ball_vol[1] *= -1;
-        ball_pos[1] = 550;
+    if(batDet()) {
+        //ball_vol = reverseY(ball_vol);
+        batBounce();
     }
 
-    ball_pos[0] += ball_vol[0];
-    ball_pos[1] += ball_vol[1];
+    ball_pos = add(ball_pos, ball_vol);
 
     fill(255, 0, 0);
+    strokeWeight(0);
     circle(ball_pos[0], ball_pos[1], 20);
+    strokeWeight(1);
 
 }
 
-function draw() {
+function welcome() {
+    
     clear();
-    magic.draw(canvas);
-    background(0,127);
+    rec_model.draw(canvas);
+    background(0, 127);
+
+    scale(-1, 1);
+    strokeWeight(0);
+    text('stage 1: welcome', -100, 100);
+    strokeWeight(1);
+    push();
+}
+
+function main() {
+
+    clear();
+    rec_model.draw(canvas);
+    background(0, 127);
       
     drawBat();
 
-    updateBall();
-     
-    console.log(bat_pos[0]);
-    //console.log(magic.getScore());
-    //console.log(cap_feed.tagName);
-    //console.log(canvas.tagName);
-    //console.log(Object.keys(head_pos[0]));
+    updateBall();  
+}
+
+function score() {
     
+    clear();
+    rec_model.draw(canvas);
+    background(0, 127);
+
+    scale(-1, 1);
+    strokeWeight(0);
+    text('stage 3: score', -100, 100);
+    strokeWeight(1);
+    push();
+}
+
+function draw() {
+
+    //console.log(stage);
+
+    if(stage === 0){
+        welcome();
+    } else if(stage === 1) {
+        main();
+    } else if(stage === 2) {
+        score();
+    }
+    
+}
+
+function keyPressed() {
+    if(stage === 0) {
+        init();
+    }
+
+    stage = (stage + 1) % 3;
     
 }
