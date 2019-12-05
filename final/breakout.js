@@ -1,5 +1,4 @@
-/*TO-DO: tide-up stages vector implementation
-bat implemtentation
+/*TO-DO: tide-up stages vector implementation bat implemtentation
 blocks
 collision
 scoring
@@ -19,10 +18,12 @@ let bat_dir;
 let bat_left;
 let bat_k;
 let bat_b;
-
 let bat_right;
+
 let ball_pos;
 let ball_vol;
+
+let blocks = [];
 
 function init() {
     
@@ -33,6 +34,11 @@ function init() {
     bat_dir = [1, 0];
     ball_pos = [400, 300];
     ball_vol = [0, 2];
+    
+    for(let i = 0; i < 4; i++){
+        blocks.push([1, 1, 1, 1, 1, 1, 1, 1]);
+    }
+
     //console.log('init');
 }
 
@@ -41,6 +47,7 @@ function setup() {
 
     createCanvas(800,600);
     noStroke();
+    frameRate(60);
 
     if (navigator.mediaDevices.getUserMedia) { 
         // getUserMedia section from: https://www.kirupa.com/html5/accessing_your_webcam_in_html5.htm
@@ -136,7 +143,7 @@ function batBounce() {
     //console.log('temp: '+temp);
     //console.log('delta: '+delta);
     ball_vol = mul(normalize(add(temp, delta)), 2);
-    console.log('after: '+ball_vol);
+    //console.log('after: '+ball_vol);
 
     
 }
@@ -173,6 +180,24 @@ function updateBall() {
 
 }
 
+function drawBlocks() {
+    //pop();
+
+    strokeWeight(0);
+    fill(255);
+    for(let i = 0; i < 4; i++) {
+        for(let j = 0; j < 8; j++) {
+            if(blocks[i][j]) {
+                rect(75*j+100 ,75*i , 75, 30);
+            }
+        }
+    }
+
+    strokeWeight(1);
+    //push();
+
+}
+
 function welcome() {
     
     clear();
@@ -195,6 +220,8 @@ function main() {
     drawBat();
 
     updateBall();  
+
+    drawBlocks();
 }
 
 function score() {
@@ -212,7 +239,7 @@ function score() {
 
 function draw() {
 
-    //console.log(stage);
+    console.log(frameRate());
 
     if(stage === 0){
         welcome();
