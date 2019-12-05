@@ -17,11 +17,14 @@ html, body {
   }
 
   video {
+    width: 800;
+    height: 600;
     position: fixed;
     left: 50vw;
     transform: translateX(-50%) scaleX(-1);
     z-index: 0;
     border-radius: 4px;
+    object-fit: cover;
   }
   
   h1 {
