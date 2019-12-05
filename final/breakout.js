@@ -1,9 +1,7 @@
-/*TO-DO: tide-up stages vector implementation bat implemtentation
-blocks
-collision
+/*TO-DO: tide-up stages vector implementation bat implemtentation blocks collision github page
+name
 scoring
 ui
-github page
 */
 
 let ctx;
@@ -23,7 +21,8 @@ let bat_right;
 let ball_pos;
 let ball_vol;
 
-let blocks = [];
+let blocks;
+let blocks_left;
 
 function init() {
     
@@ -35,9 +34,11 @@ function init() {
     ball_pos = [400, 300];
     ball_vol = [0, 2];
     
+    blocks = [];
     for(let i = 0; i < 4; i++){
         blocks.push([1, 1, 1, 1, 1, 1, 1, 1]);
     }
+    blocks_left = 32;
 
     //console.log('init');
 }
@@ -148,6 +149,45 @@ function batBounce() {
     
 }
 
+function blockBounce() {
+    if(ball_pos[0] < 100
+        || ball_pos[0] > 700
+        || ball_pos[1] > 300
+        ) {
+        return false;
+    } 
+    
+    let col = min(floor((ball_pos[0] - 100) / 75), 7);
+    let row = min(floor(ball_pos[1] / 75), 3);
+
+    let relx = (ball_pos[0] - 100) % 75;
+    let rely = (ball_pos[1]) % 75; 
+
+    console.log(row + ' ' +col);
+    console.log(blocks);
+
+    if(blocks[row][col]) {
+        if(
+            rely >= 15
+            && rely <= 45) {
+                //  horizonal
+                ball_vol = reverseX(ball_vol);
+                blocks[row][col] = 0;
+                blocks_left--;
+            }
+        if(rely >=5
+            && rely <= 55
+            && relx >= 10
+            && relx <= 65) {
+                //  vertical
+                ball_vol = reverseY(ball_vol);
+                blocks[row][col] = 0;
+                blocks_left--;
+            }
+    }
+
+}
+
 function updateBall() {
     //console.log(head_dir);
     //  Wall detection
@@ -171,6 +211,8 @@ function updateBall() {
         batBounce();
     }
 
+    blockBounce();
+
     ball_pos = add(ball_pos, ball_vol);
 
     fill(255, 0, 0);
@@ -188,7 +230,7 @@ function drawBlocks() {
     for(let i = 0; i < 4; i++) {
         for(let j = 0; j < 8; j++) {
             if(blocks[i][j]) {
-                rect(75*j+100 ,75*i , 75, 30);
+                rect(75*j+110 ,15+75*i , 55, 30);
             }
         }
     }
@@ -239,7 +281,7 @@ function score() {
 
 function draw() {
 
-    console.log(frameRate());
+    //console.log(frameRate());
 
     if(stage === 0){
         welcome();
