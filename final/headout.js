@@ -323,7 +323,7 @@ function score() {
     text('Max combo: '+ max_combo, -700, 200);
     text('Hit: '+ hit, -700, 250);
     if(blocks_left == 0) {
-        text('You broke all the blocks!', -700, 300);
+        text('You broke all blocks', -700, 300);
     } else {
         text('You broke '+(32 - blocks_left) +' block(s)', -700, 300);
     }
