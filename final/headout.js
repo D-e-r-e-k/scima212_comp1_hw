@@ -1,8 +1,4 @@
-/*TO-DO: tide-up stages vector implementation bat implemtentation blocks collision github page
-name
-scoring
-ui
-*/
+//  Future improvements: clean up and corner collision model
 
 let ctx;
 let rec_model = new clm.tracker();

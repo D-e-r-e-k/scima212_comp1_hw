@@ -1,40 +1,47 @@
-# Your Project Title Here
+# HeadOut
 
-A small interactive experience (or a little experimental game) with simply gesture control, probably with yolo.
+A Break Out inspired gesture control game.
 
 ## Summary
 
-It will be a good opportunity to learn how to do some simple video processing and create a visualization of it. Gesture control has potential to make simply games become really fun to play, and even more fun to watch others play.
+The goal of Head Out is simply breaking all the blocks, just like the original Break Out game. I explored the opportunity of facial recognition and give players control over the angle of the plate. The analog between head movement and plate control is very intuitive. However, the addition of changing angle change the whole dynamic of the game. Gesture control is naturally more subtle and less responsive than analog or keypad control and fits better with a slower-paced game.
 
-I'll need to find the right library to use, learn how to use it, and design the game around it.
+The mechanism of Head Out is designed to push the concept of slower pace and subtle control. The game is not speeding up to give players more time to fine control the angle of the plate. There is one life instead of three to encourage players to be more careful. The scoring system is tuned to emphasize more on the strategic aspect of the game instead of pure reacting speed.
 
 ## Component Parts
 
-Describe the components, or pieces, that make up your project.
-
-Include what types of inputs/outputs/data it will use. You can also upload an image with a diagram showing how all those pieces are connected.
-
-## When your project is completed, you will then add the following sections:
+index.html: Structure of the layout of the game
+style.css:  Appearance of the page
+headout.js: The main script
+clmtrackr.js:   A facial recognition model I found by auduno
+vector_support.js:  Some helper functions I wrote to do vector operations
+Press_Start_2P: Font for ui
 
 ## Timeline
 
 What did you do in each of the past four weeks?
 
-- Week 1: Write Proposal, flush out initial code for your idea
-- Week 2:
-- Week 3:
+- Week 1: Write Proposal, look for good facial recognition models.
+- Week 2: Read documentations and run examples and tests.
+- Week 3: Write my code and this README file.
 - Week 4: Present!
  
 ## Challenges
 
-A brief discussion of what was hard, challenging, or unexpected about your project.
+Everything is challenging from the very beginning. Due to the implementation of the model, it's blocked by chrome for some security policies. I need some basic knowledge about browsers and servers to run my script to test it. I use p5 with the model that's not designed to work with p5, there are some conflicts that I need to take care of. The collision detection for a tilted plate and reflection angle need some time to figure out. Finally the biggest challenge is the tight time frame of the project. I spend every minute I could but can only manage to write a quick and dirty implementation of my idea.
 
 ## Completed Work
 
-Upload photos and videos of your completed final project!
-
-Also upload the code that makes up your project to your repository.
+Play here:
+https://d-e-r-e-k.github.io/scima212_comp1_hw/final/index.html
 
 ## References and links
 
-Tutorials, comments, videos, magazine articles - anything you found that helps you understand your project.
+The facial recognize model I used:
+https://github.com/auduno/clmtrackr
+
+Github Pages that I put my script on:
+https://pages.github.com/
+
+And P5 references:
+https://p5js.org/reference/
