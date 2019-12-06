@@ -24,6 +24,10 @@ let ball_vol;
 let blocks;
 let blocks_left;
 
+let combo;
+let max_combo;
+let hit;
+
 function init() {
     
     bat_k = 1;
@@ -39,6 +43,9 @@ function init() {
         blocks.push([1, 1, 1, 1, 1, 1, 1, 1]);
     }
     blocks_left = 32;
+    hit = 0;
+    combo = 0;
+    max_combo = 0;
 
     //console.log('init');
 }
@@ -65,6 +72,11 @@ function setup() {
 
     rec_model.init();
     rec_model.start(webcam_feed);
+
+    pixel_font = loadFont("Press_Start_2P/PressStart2P-Regular.ttf");
+    textFont(pixel_font);
+    
+    fill(255);
 
 }
 
@@ -149,6 +161,13 @@ function batBounce() {
     
 }
 
+function countCombo() {
+    combo++;
+    if(combo > max_combo) {
+        max_combo = combo;
+    }
+}
+
 function blockBounce() {
     if(ball_pos[0] < 100
         || ball_pos[0] > 700
@@ -163,8 +182,8 @@ function blockBounce() {
     let relx = (ball_pos[0] - 100) % 75;
     let rely = (ball_pos[1]) % 75; 
 
-    console.log(row + ' ' +col);
-    console.log(blocks);
+    //console.log(row + ' ' +col);
+    //console.log(blocks);
 
     if(blocks[row][col]) {
         if(
@@ -174,8 +193,9 @@ function blockBounce() {
                 ball_vol = reverseX(ball_vol);
                 blocks[row][col] = 0;
                 blocks_left--;
+                countCombo();
             }
-        if(rely >=5
+        else if(rely >=5
             && rely <= 55
             && relx >= 10
             && relx <= 65) {
@@ -183,13 +203,21 @@ function blockBounce() {
                 ball_vol = reverseY(ball_vol);
                 blocks[row][col] = 0;
                 blocks_left--;
+                countCombo();
             }
+    }
+
+    if(blocks_left === 0) {
+        stage = 2;
     }
 
 }
 
 function updateBall() {
     //console.log(head_dir);
+    if(ball_pos[1] > 600) {
+        stage = 2;
+    }
     //  Wall detection
     if(ball_pos[0] <= 10) {
         ball_vol = reverseX(ball_vol);
@@ -208,6 +236,8 @@ function updateBall() {
     //  Bat detection
     if(batDet()) {
         //ball_vol = reverseY(ball_vol);
+        combo = 0;
+        hit++;
         batBounce();
     }
 
@@ -248,7 +278,17 @@ function welcome() {
 
     scale(-1, 1);
     strokeWeight(0);
-    text('stage 1: welcome', -100, 100);
+    fill(255);
+    textSize(90);
+    text('HeadOut', -700, 250);
+    textSize(19);
+    text('Gently move your head to control', -700, 450);
+    textSize(30);
+    if(rec_model.getScore() <= 0.4) {
+        text('Loading...', -550, 550);
+    } else {
+        text('Press space to start', -700, 550);
+    }
     strokeWeight(1);
     push();
 }
@@ -257,6 +297,14 @@ function main() {
 
     clear();
     rec_model.draw(canvas);
+    scale(-1, 1);
+    strokeWeight(0);
+    fill(255);
+    textSize(30);
+    text('Combo: '+ combo, -690, 550);
+    text('Hit: '+ hit, -300, 550);   
+    scale(-1, 1);
+    //push();
     background(0, 127);
       
     drawBat();
@@ -274,7 +322,18 @@ function score() {
 
     scale(-1, 1);
     strokeWeight(0);
-    text('stage 3: score', -100, 100);
+    fill(255);
+    textSize(30);
+    text('Max combo: '+ max_combo, -700, 200);
+    text('Hit: '+ hit, -700, 250);
+    if(blocks_left == 0) {
+        text('You broke all the blocks!', -700, 300);
+    } else {
+        text('You broke '+(32 - blocks_left) +' block(s)', -700, 300);
+    }
+    text('Press space to replay', -700, 550);
+    scale(-1, 1);
+
     strokeWeight(1);
     push();
 }
@@ -294,10 +353,12 @@ function draw() {
 }
 
 function keyPressed() {
-    if(stage === 0) {
+    //&& (rec_model.getScore() >= 0.4)
+    if(stage === 0 && keyCode == 32) {
+        stage = 1;
         init();
+    } else if(stage === 2 && keyCode == 32) {
+        stage = 0;
     }
-
-    stage = (stage + 1) % 3;
     
 }
